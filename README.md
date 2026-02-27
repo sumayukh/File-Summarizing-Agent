@@ -16,8 +16,9 @@ An intelligent Streamlit-powered agent that:
 ## 1. Clone the Repository
 
 ```bash
-git clone https://github.com/sumayukh/YOUR_REPO_NAME.git
-cd YOUR_REPO_NAME
+git clone https://github.com/sumayukh/File-Summarizing-Agent.git
+cd File-Summarizing-Agent
+code .
 ```
 
 ## 2. Create venv
