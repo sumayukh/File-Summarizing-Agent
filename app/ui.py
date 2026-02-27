@@ -20,7 +20,7 @@ def reset_session():
 def ui():
     st.set_page_config(page_icon="random", page_title="AI File Summarizing Agent", layout="wide")
     st.title("AI File Summarizing Agent", anchor=False)
-    # subtitle/paragraph
+
     st.subheader(
         """
             An intelligent Streamlit-powered agent that:

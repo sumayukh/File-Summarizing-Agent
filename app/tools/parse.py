@@ -1,4 +1,3 @@
-import fitz
 import pdfplumber
 import docx
 

@@ -1,6 +1,5 @@
-from openai import OpenAI, RateLimitError
+from openai import OpenAI
 from app.config import OPENAI_API_KEY
-import time
 
 class SummarizerService:
     def __init__(self, client=None):
