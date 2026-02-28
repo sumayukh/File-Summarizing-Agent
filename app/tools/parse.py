@@ -26,6 +26,8 @@ class ParserService:
                 return self.parse_pdf(self.file_stream)
             case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
                 return self.parse_docx(self.file_stream)
+            case "application/vnd.google-apps.document":
+                return self.parse_docx(self.file_stream)
             case "text/plain":
                 return self.parse_txt(self.file_stream)
             case _:

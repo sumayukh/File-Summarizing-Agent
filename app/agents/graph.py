@@ -34,7 +34,7 @@ def auth_check_node(state: AgentState):
         email = credentials.id_token.get("email", None)
         
     state["email"] = email
-    print_log(state, f"User authenticated: {state['email']}")
+    print_log(state, f"User authenticated: {state['email'] if state['email'] else state['authenticated']}")
     
     return state
     
@@ -81,17 +81,18 @@ def read_node(state: AgentState):
     for file in files:
         parsed_file = {}
         mime_type = file["mimeType"]
-        
-        if mime_type not in [
+        allowed_types = [
             "application/pdf",
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "application/vnd.google-apps.document",
             "text/plain"
-        ]:
+        ]
+        if mime_type not in allowed_types:
             continue
         
-        print_log(state, f"Downloading: {file['name']}")
+        print_log(state, f"Downloading: File Name - {file['name']}, MIME Type - {mime_type}")
         
-        file_stream = drive.download_file(file["id"])
+        file_stream = drive.download_file(file["id"]) if mime_type != "application/vnd.google-apps.document" else drive.download_file(file["id"], mimeType=mime_type)
         parser = ParserService(file_stream, mime_type)
         data = parser.parse_file()
         parsed_file["name"] = file["name"]
@@ -113,11 +114,15 @@ def write_node(state: AgentState):
         return state
 
     print_log(state, "Summarizing data...")
-
+    usage_data = []
     for file in state["files"]:
         try:
-            summary = summarizer.summarize(file["data"])
+            summary, token_usage = summarizer.summarize(file["data"])
             file["summary"] = summary
+            usage_data.append({
+                "file_name": file["name"],
+                "usage": token_usage
+            })
             print_log(state, f"Summarized: {file['name']}")
             time.sleep(3)
         except Exception as e:
@@ -127,6 +132,10 @@ def write_node(state: AgentState):
 
     with open("reports/output.json", "w") as f:
         json.dump(state["files"], f, indent=4)
+        
+    if len(usage_data) > 0:
+        with open("reports/usage.json", "w") as f:
+            json.dump(usage_data, f, indent=4)
         
     summarized_files = [f for f in state["files"] if f.get("summary", "").strip() != ""]
     print_log(state, f"{len(summarized_files)} files summarized successfully.") if len(summarized_files) > 0 else print_log(state, "No files were summarized.")

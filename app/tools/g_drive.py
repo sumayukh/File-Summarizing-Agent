@@ -22,8 +22,8 @@ class GDriveService:
         results = self.google_drive.files().list(q=q, fields=fields).execute()
         return results.get("files", [])
     
-    def download_file(self, file_id):
-        request = self.google_drive.files().get_media(fileId=file_id)
+    def download_file(self, file_id, mimeType=None):
+        request = self.google_drive.files().export_media(fileId=file_id, mimeType="application/vnd.openxmlformats-officedocument.wordprocessingml.document") if mimeType == "application/vnd.google-apps.document" else self.google_drive.files().get_media(fileId=file_id)
         fs = io.BytesIO()
         downloader = MediaIoBaseDownload(fs, request)
         done = False

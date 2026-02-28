@@ -60,6 +60,7 @@ Create a .env file in the root directory. It should have the following keys with
 - GOOGLE_READ_SCOPE_URI=Your read scope uri
 - GOOGLE_REDIRECT_URI=http://localhost:8000/oauth/callback
 - OPENAI_API_KEY=Your OpenAI API key
+- GROQ_BASE_URL=https://api.groq.com/openai/v1
 - FASTAPI_BACKEND_URL=http://localhost:8000
 
 ## 4. GCP setup
