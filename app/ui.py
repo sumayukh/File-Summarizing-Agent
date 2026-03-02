@@ -25,7 +25,7 @@ def ui():
         """
             An intelligent Streamlit-powered agent that:
                 - Authenticates with Google
-                - Fetches files from Google Drive
+                - Fetches files from Google Drive's "test" folder
                 - Summarizes them using OpenAI
                 - Displays and exports results
         """,
