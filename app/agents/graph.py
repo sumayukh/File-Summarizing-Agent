@@ -1,14 +1,12 @@
-from langgraph.graph import StateGraph
+from langgraph.graph import StateGraph, END
 from app.agents.state import AgentState
 from app.tools.auth import authenticate
 from app.tools.g_drive import GDriveService
 from app.tools.parse import ParserService
 from app.utils.logger import Logger
 from app.tools.summarize import SummarizerService
-from app.config import FASTAPI_BACKEND_URL, FOLDER_NAME
-import json
+from app.config import FOLDER_NAME
 import os
-import webbrowser
 import time
 
 summarizer = SummarizerService()
@@ -20,39 +18,32 @@ def print_log(state: AgentState, message: str):
 
 def auth_check_node(state: AgentState):
     print_log(state, "Checking authentication status...")
-    credentials = authenticate()
-    
+    credentials, _ = authenticate()
     if not credentials:
         state["authenticated"] = False
+        state["email"] = None
+        state["access_token"] = None
         print_log(state, "User not authenticated.")
         return state
-    
     state["authenticated"] = True
-    state["access_token"] = credentials.token
+    state["access_token"] = credentials.get("token", None)
     email = None
-    if hasattr(credentials, "id_token") and credentials.id_token:
+    if hasattr(credentials, "id_token") and credentials["id_token"]:
         email = credentials.id_token.get("email", None)
         
     state["email"] = email
     print_log(state, f"User authenticated: {state['email'] if state['email'] else state['authenticated']}")
-    
     return state
     
-def login_node(state: AgentState):
-    print_log(state, "No stored credentials found.")
-    print_log(state, "Opening browser for first-time authentication...")
-    loginUrl = f"{FASTAPI_BACKEND_URL}/login"
-    webbrowser.open(loginUrl)
-    
-    raise Exception("First-time login required. Complete authentication in browser and click Start again.")
-
 def read_node(state: AgentState):
     
     print_log(state, "Accessing Google Drive...")
-    credentials = authenticate()
+    _, credentials = authenticate()
     if not credentials:
+        state["authenticated"] = False
+        state["email"] = None
+        state["access_token"] = None
         raise Exception("Authentication required before reading files.")
-    
     drive = GDriveService(credentials)
     print_log(state, f"Searching for folder: {FOLDER_NAME}")
     
@@ -130,12 +121,6 @@ def write_node(state: AgentState):
 
     os.makedirs("reports", exist_ok=True)
 
-    with open("reports/output.json", "w") as f:
-        json.dump(state["files"], f, indent=4)
-        
-    if len(usage_data) > 0:
-        with open("reports/usage.json", "w") as f:
-            json.dump(usage_data, f, indent=4)
         
     summarized_files = [f for f in state["files"] if f.get("summary", "").strip() != ""]
     print_log(state, f"{len(summarized_files)} files summarized successfully.") if len(summarized_files) > 0 else print_log(state, "No files were summarized.")
@@ -146,16 +131,14 @@ class AgentGraph:
         graph = StateGraph(AgentState)
 
         graph.add_node("auth_check", auth_check_node)
-        graph.add_node("login", login_node)
         graph.add_node("read", read_node)
         graph.add_node("write", write_node)
 
         graph.set_entry_point("auth_check")
 
-        graph.add_conditional_edges("auth_check", lambda state: "login" if not state["authenticated"] else "read")
+        graph.add_conditional_edges("auth_check", lambda state: END if not state["authenticated"] else "read")
         
-        graph.add_edge("login", "read")
         graph.add_edge("read", "write")
-        # graph.add_edge("write", "END")
+        graph.add_edge("write", END)
 
         return graph.compile()
