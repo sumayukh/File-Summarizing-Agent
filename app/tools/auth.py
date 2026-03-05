@@ -36,7 +36,7 @@ def login():
             prompt="consent",
             include_granted_scopes="true"
         )
-
+        print(f"URL: {auth_url}")
         return auth_url
     except Exception as e:
         return None
