@@ -5,7 +5,7 @@ def render_oauth():
     st.subheader("""
                  Google Authentication
                     - Click on the button below. It will open a new tab
-                    - Once it opens, you may close this tab.
+                    - Once it opens, you may close this tab
                 """, anchor=False)
     
     try:
