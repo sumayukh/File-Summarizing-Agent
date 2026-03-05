@@ -2,7 +2,11 @@ import streamlit as st
 from app.tools.auth import login, oauth_callback
 
 def render_oauth():
-    st.subheader("Google Authentication", anchor=False)
+    st.subheader("""
+                 Google Authentication
+                    - Click on the button below. It will open a new tab
+                    - Once it opens, you may close this tab.
+                """, anchor=False)
     
     try:
         if "credentials" not in st.session_state:
