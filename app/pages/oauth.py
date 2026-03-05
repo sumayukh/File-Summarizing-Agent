@@ -9,23 +9,11 @@ def render_oauth():
             query_params = st.query_params
             if "code" not in query_params:
                 auth_url = login()
-                st.markdown(
-                    f"""
-                    <a href="{auth_url}" target="_self" style="text-decoration:none;">
-                        <button style="
-                            padding:0.5em 1em;
-                            border:none;
-                            border-radius:6px;
-                            background-color:#4285F4;
-                            color:white;
-                            font-weight:600;
-                            cursor:pointer;">
-                            Login with Google
-                        </button>
-                    </a>
-                    """,
-                    unsafe_allow_html=True
-                )
+                if st.button("Login with Google"):
+                    st.markdown(
+                        f'<meta http-equiv="refresh" content="0; url={auth_url}">',
+                        unsafe_allow_html=True
+                    )
             else:
                 code = query_params.get("code")
                 credentials = oauth_callback(code)
