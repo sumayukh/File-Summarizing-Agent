@@ -9,7 +9,7 @@ def render_oauth():
             query_params = st.query_params
             if "code" not in query_params:
                 auth_url = login()
-                st.markdown(f'<a href="{auth_url}" target="_self">Login with Google</a>', unsafe_allow_html=True)
+                st.link_button("Login with Google", auth_url)
             else:
                 code = query_params.get("code")
                 credentials = oauth_callback(code)
