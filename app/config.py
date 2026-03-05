@@ -10,6 +10,5 @@ TOKEN_FILE = os.getenv("TOKEN_FILE") or st.secrets["TOKEN_FILE"]
 GOOGLE_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI") or st.secrets["GOOGLE_REDIRECT_URI"]
 GOOGLE_READ_SCOPE_URI = os.getenv("GOOGLE_READ_SCOPE_URI") or st.secrets["GOOGLE_READ_SCOPE_URI"]
 GROQ_BASE_URL = os.getenv("GROQ_BASE_URL") or st.secrets["GROQ_BASE_URL"]
-FASTAPI_BACKEND_URL = os.getenv("FASTAPI_BACKEND_URL") or st.secrets["FASTAPI_BACKEND_URL"]
 LOG_DIR = "logs"
 FOLDER_NAME = "test"
