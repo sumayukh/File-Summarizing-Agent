@@ -11,7 +11,7 @@ def render_oauth():
                 auth_url = login()
                 st.markdown(
                     f"""
-                    <a href="{auth_url}" style="text-decoration:none;">
+                    <a href="{auth_url}" target="_self" style="text-decoration:none;">
                         <button style="
                             padding:0.5em 1em;
                             border:none;
